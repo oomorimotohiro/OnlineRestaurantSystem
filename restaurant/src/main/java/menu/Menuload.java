@@ -4,9 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileUrlResource;
+
 import bean.Menu;
+import jakarta.annotation.Resources;
 
 /**
  * @author takeshitakonomi
@@ -14,46 +24,39 @@ import bean.Menu;
 public class Menuload {
 	public List<Menu> menucsv(){
 		List<Menu> menulist = new ArrayList<>();
+		String targetPath = "/public";
+		
 		BufferedReader br = null;
-		String menu_csv = "C:\\Users\\DC-PCN1144\\Desktop\\menu.csv";
-		     
-        
+		// ファイルから読み取った行を連結する
+		StringBuilder sb = new StringBuilder();
+					
         try {
-        	File file = new File(menu_csv);
-            br = new BufferedReader(new FileReader(file));
-            // ファイルから読み取った行を連結する
-            StringBuilder sb = new StringBuilder();
-            String line;
-                        
-			while ((line = br.readLine()) != null) {
+			ClassPathResource resource = new ClassPathResource(targetPath + "/menu.csv");
+			InputStream in = resource.getInputStream();
+			br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+			String line = null;
+			while((line = br.readLine()) != null) {
 				Pattern cPattern = Pattern.compile(",(?=(([^\"]*\"){2})*[^\"]*$)"); 
 	            String[] columns = cPattern.split(line, -1); 
-	            
-	            
-	            Menu menu = new Menu();
-	            
-	            menu.setRanking(columns[0]);
-	            menu.setName(columns[1]);
-	            menu.setKcal(columns[2].replace("\"", ""));
-	            menu.setPrice(columns[3].replace("\"", ""));
-	            menu.setCount(columns[4]);
-	            
+				Menu menu = new Menu(columns);
 	            menulist.add(menu);
-	
 			}
 			// StringBuilderの初期化
 	            sb.setLength(0);
 	            
 			} catch (Exception e) {
+				e.printStackTrace();
 	            System.out.println(e.getMessage());
-	            
 	        } finally {
-	            try {
-	                br.close();
-	            	} catch (Exception e) {
-	                System.out.println(e.getMessage());
-	            	}
-	        }
+				if (null != br) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+						// todo nothing.
+					}
+				}
+			}
 	        
 	        return menulist;
 	
