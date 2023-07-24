@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,48 +19,48 @@ import org.springframework.core.io.FileUrlResource;
 import bean.Menu;
 import jakarta.annotation.Resources;
 
-/**
- * @author takeshitakonomi
- */
 public class Menuload {
-	public List<Menu> menucsv(){
+	public List<Menu> menucsv() {
 		List<Menu> menulist = new ArrayList<>();
 		String targetPath = "/public";
 		
 		BufferedReader br = null;
-		// ファイルから読み取った行を連結する
-		StringBuilder sb = new StringBuilder();
-					
-        try {
-			ClassPathResource resource = new ClassPathResource(targetPath + "/menu.csv");
-			InputStream in = resource.getInputStream();
-			br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-			String line = null;
-			while((line = br.readLine()) != null) {
-				Pattern cPattern = Pattern.compile(",(?=(([^\"]*\"){2})*[^\"]*$)"); 
-	            String[] columns = cPattern.split(line, -1); 
-				Menu menu = new Menu(columns);
-	            menulist.add(menu);
+		String menu_csv = "C:\\Users\\DC-PCN1144\\Desktop\\menu.csv";
+
+		try {
+			File file = new File(menu_csv);
+			br = new BufferedReader(new FileReader(file));
+			// ファイルから読み取った行を連結する
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = br.readLine()) != null) {
+				Pattern cPattern = Pattern.compile(",(?=(([^\"]*\"){2})*[^\"]*$)");
+				String[] columns = cPattern.split(line, -1);
+
+				Menu menu = new Menu();
+
+				menu.setRanking(columns[0]);
+				menu.setName(columns[1]);
+				menu.setKcal(columns[2].replace("\"", ""));
+				menu.setPrice(columns[3].replace("\"", ""));
+				menu.setCount(columns[4]);
+
+				menulist.add(menu);
 			}
 			// StringBuilderの初期化
-	            sb.setLength(0);
-	            
+			sb.setLength(0);
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+
+		} finally {
+			try {
+				br.close();
 			} catch (Exception e) {
-				e.printStackTrace();
-	            System.out.println(e.getMessage());
-	        } finally {
-				if (null != br) {
-					try {
-						br.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-						// todo nothing.
-					}
-				}
+				System.out.println(e.getMessage());
 			}
-	        
-	        return menulist;
-	
-        
+		}
+
+		return menulist;
 	}
 }

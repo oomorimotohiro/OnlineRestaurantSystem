@@ -11,37 +11,6 @@ public class Menu implements java.io.Serializable{
 	private String kcal;
 	private String price;
 	private String count;
-	private List<Menu> menulist;
-	
-	private static final int _RNAKING = 0;
-	private static final int _NAME = 1;
-	private static final int _KCAL = 2;
-	private static final int _PRICE = 3;
-	private static final int _COUNT = 4;
-
-
-	public Menu() {
-		super();
-	}
-
-	public Menu(String ranking, String name, String kcal, String price, String count) {
-		this.ranking = ranking;
-		this.name = name;
-		this.kcal = kcal.replace("\"", "");
-		this.price = price.replace("\"", "");
-		this.count = count;
-	}
-
-	public Menu(String[] csvColumns) {
-		this(csvColumns[_RNAKING], csvColumns[_NAME], csvColumns[_KCAL], csvColumns[_PRICE], csvColumns[_COUNT]);
-	}
-	
-	public List<Menu> getMenulist() {
-		return menulist;
-	}
-	public void setMenulist(List<Menu> menulist) {
-		this.menulist = menulist;
-	}
 	public String getRanking() {
 		return ranking;
 	}
@@ -75,6 +44,4 @@ public class Menu implements java.io.Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
 }
